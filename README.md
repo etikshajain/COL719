@@ -1,5 +1,6 @@
-cd A1
+### How to run
+`cd A1/`
 
-make clean
+`make clean`
 
 `make run`
