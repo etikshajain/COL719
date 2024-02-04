@@ -2,4 +2,4 @@ a = b + c + d - 5
 x = d * a
 y = z + x
 a = x + y
-a = 78
+a = 2 * a + a * x

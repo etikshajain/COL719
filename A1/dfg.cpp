@@ -60,9 +60,6 @@ void generateDOTHelper(DFGNode* root, ofstream& dotFile, vector<bool>&vis) {
 void generateDOT(vector<DFGNode*> nodes, const string& fileName) {
     ofstream dotFile(fileName);
     dotFile << "digraph DFG {" << endl;
-    // if (root != nullptr) {
-    //     generateDOTHelper(root, dotFile);
-    // }
     vector<bool>vis(nodes.size(),false);
     for(DFGNode*node: nodes){
         if(vis[node->id]==false){
@@ -210,13 +207,9 @@ int main() {
             std::cout<<"lhs := "<<lhs<<" ; rhs := "<<rhs<<"\n";
 
             // check re-assignment of lhs
+            string new_lhs = lhs;
             if(single_assignment.find(lhs)!=single_assignment.end()){
-                string new_lhs = single_assignment[lhs] + "1";
-                single_assignment[lhs] = new_lhs;
-                single_assignment[new_lhs] = new_lhs;
-            }
-            else{
-                single_assignment[lhs]=lhs;
+                new_lhs = single_assignment[lhs] + "1";
             }
 
             // Tokenize RHS expression with reassigned values
@@ -228,12 +221,8 @@ int main() {
             std::cout<<endl;
 
             // Tokenize LHS expression with reassigned values
-            vector<string> tokens_lhs = tokenize(lhs, single_assignment);
-            std::cout<<"tokenized lhs : \n";
-            for(auto &token : tokens_lhs){
-                std::cout<<token<<";";
-            }
-            std::cout<<"\n";
+            // vector<string> tokens_lhs = tokenize(lhs, single_assignment);
+            std::cout<<"tokenized lhs : "<<"\n"<<new_lhs <<"\n";
 
             // Convert infix to prefix for RHS
             vector<string> prefix_expression_rhs = infixToPrefix(tokens_rhs);
@@ -243,14 +232,17 @@ int main() {
             }
             std::cout<<"\n";
 
+            // after tokeninzing lhs and rhs, update the assignment of lhs with new lhs for future use
+            single_assignment[lhs] = new_lhs;
+
             // Build DFG
 
             // lhs node is always a new node(single assignment)
-            DFGNode*left = new DFGNode(tokens_lhs[0], true, nodes_list.size()); 
+            DFGNode*left = new DFGNode(new_lhs, true, nodes_list.size()); 
             nodes_list.push_back(left);
 
             // add the new node to map
-            dfg_node[tokens_lhs[0]] = left;
+            dfg_node[new_lhs] = left;
 
             // build dfg for RHS 
             root = constructDFG(prefix_expression_rhs, dfg_node, nodes_list); // always an operator
