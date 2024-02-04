@@ -47,7 +47,7 @@ void generateDOTHelper(DFGNode* root, ofstream& dotFile, vector<bool>&vis) {
     if (root == nullptr) return;
     vis[root->id]=true;
 
-    dotFile << "    \"" << root << "\" [label=\"" << root->value<< ','<<root->id << "\"];" << endl;
+    dotFile << "    \"" << root << "\" [label=\"" << root->value << "\"];" << endl;
 
     for(DFGNode*child: root->children){
         dotFile << "    \"" << root << "\" -> \"" << child << "\";" << endl;
@@ -182,7 +182,7 @@ DFGNode* constructDFG(const vector<string>& prefixExpression, unordered_map<stri
 }
 
 int main() {
-    string input_filename = "./io/example.txt";
+    string input_filename = "./io/example_3.txt";
     std::ifstream infile(input_filename);
 
     if (!infile) {
@@ -211,8 +211,9 @@ int main() {
 
             // check re-assignment of lhs
             if(single_assignment.find(lhs)!=single_assignment.end()){
-                string new_lhs = lhs + "1";
+                string new_lhs = single_assignment[lhs] + "1";
                 single_assignment[lhs] = new_lhs;
+                single_assignment[new_lhs] = new_lhs;
             }
             else{
                 single_assignment[lhs]=lhs;
@@ -262,7 +263,7 @@ int main() {
     }
 
     // Generate dot file for the tree
-    string fileName = "./io/dfg_3.dot";
+    string fileName = "./io/dfg_.dot";
     generateDOT(nodes_list, fileName);
 
     // Delete DFG
