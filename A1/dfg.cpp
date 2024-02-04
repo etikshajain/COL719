@@ -85,13 +85,11 @@ void generateDOT(vector<DFGNode*> nodes, const string& fileName) {
     dotFile.close();
 }
 
-// void deleteTree(TreeNode* root) {
-//     if (root) {
-//         deleteTree(root->left);
-//         deleteTree(root->right);
-//         delete root;
-//     }
-// }
+void deleteDFG(vector<DFGNode*>nodes) {
+    for(DFGNode* node: nodes){
+        delete node;
+    }
+}
 
 int precedence(char op) {
     if (op == '*' || op=='/'){
@@ -278,6 +276,9 @@ int main() {
     // Generate dot file for the tree
     string fileName = "./io/dfg_3.dot";
     generateDOT(nodes_list, fileName);
+
+    // Delete DFG
+    deleteDFG(nodes_list);
 
     return 0;
 }
