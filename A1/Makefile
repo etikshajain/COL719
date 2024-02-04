@@ -1,20 +1,17 @@
 CXX = g++
 CXXFLAGS = -std=c++11 -Wall -O3
 
-TARGET = main
-SRCS = dfg.cpp
-OBJS = $(SRCS:.cpp=.o)
+all: ast dfg
 
-$(TARGET): $(OBJS)
-	$(CXX) $(CXXFLAGS) $^ -o $@
+ast: ast.cpp
+	$(CXX) $(CXXFLAGS) $< -o $@
 
-%.o: %.cpp
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+dfg: dfg.cpp
+	$(CXX) $(CXXFLAGS) $< -o $@
 
-.PHONY: clean
-
-run: main
-	./main
+run: all
+	./ast
+	./dfg
 
 clean:
-	rm -f $(OBJS) $(TARGET) main
+	rm -f ast dfg

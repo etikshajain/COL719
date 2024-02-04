@@ -179,7 +179,7 @@ DFGNode* constructDFG(const vector<string>& prefixExpression, unordered_map<stri
 }
 
 int main() {
-    string input_filename = "./io/example_3.txt";
+    string input_filename = "./io/example.txt";
     std::ifstream infile(input_filename);
 
     if (!infile) {
@@ -255,7 +255,7 @@ int main() {
     }
 
     // Generate dot file for the tree
-    string fileName = "./io/dfg_.dot";
+    string fileName = "./io/dfg.dot";
     generateDOT(nodes_list, fileName);
 
     // Delete DFG

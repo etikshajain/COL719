@@ -182,7 +182,7 @@ TreeNode* constructAST(const vector<string>& prefixExpression) {
 }
 
 int main() {
-    string input_filename = "./io/example_3.txt";
+    string input_filename = "./io/example.txt";
     std::ifstream infile(input_filename);
 
     if (!infile) {
