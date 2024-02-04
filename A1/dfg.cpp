@@ -43,18 +43,6 @@ vector<string> tokenize(string expression, unordered_map<string,string>&single_a
     return tokens;
 }
 
-// void printTree(TreeNode* root, string prefix = "", bool isLeft = true) {
-//     if (root == nullptr) return;
-
-//     std::cout << prefix;
-//     std::cout << (isLeft ? "├──" : "└──" );
-
-//     std::cout << root->value << endl;
-
-//     printTree(root->left, prefix + (isLeft ? "│   " : "    "), true);
-//     printTree(root->right, prefix + (isLeft ? "│   " : "    "), false);
-// }
-
 void generateDOTHelper(DFGNode* root, ofstream& dotFile, vector<bool>&vis) {
     if (root == nullptr) return;
     vis[root->id]=true;
