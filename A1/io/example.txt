@@ -1,0 +1,5 @@
+w = a + b
+x = a - c
+y = x + d
+x = a + c
+z = y + x

@@ -2,7 +2,7 @@ CXX = g++
 CXXFLAGS = -std=c++11 -Wall -O3
 
 TARGET = main
-SRCS = basic.cpp
+SRCS = dfg.cpp
 OBJS = $(SRCS:.cpp=.o)
 
 $(TARGET): $(OBJS)

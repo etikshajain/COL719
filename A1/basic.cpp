@@ -155,7 +155,7 @@ vector<string> infixToPrefix(const vector<string>& tokens) {
     return output;
 }
 
-TreeNode* constructAST(const vector<string>& prefixExpression, unordered_map<string,TreeNode*>& ast) {
+TreeNode* constructAST(const vector<string>& prefixExpression) {
     if (prefixExpression.empty()) {
         return nullptr;
     }
@@ -168,9 +168,6 @@ TreeNode* constructAST(const vector<string>& prefixExpression, unordered_map<str
         TreeNode* newNode = new TreeNode(token);
 
         if (isdigit(token[0]) || isalpha(token[0])) {
-            if(ast.find(token)!=ast.end()){
-                newNode = ast[token];
-            }
             nodes.push(newNode);
         } else {
             newNode->left = nodes.top();
@@ -185,7 +182,7 @@ TreeNode* constructAST(const vector<string>& prefixExpression, unordered_map<str
 }
 
 int main() {
-    string input_filename = "example.txt";
+    string input_filename = "./io/example.txt";
     std::ifstream infile(input_filename);
 
     if (!infile) {
@@ -197,8 +194,6 @@ int main() {
     string statement;
     unordered_map<string, vector<string>> dfg; // Data Flow Graph
 
-    unordered_map<string, TreeNode*> ast;
-
     int line_num = 0;
     while (getline(infile, statement)) {
         line_num++;
@@ -209,7 +204,7 @@ int main() {
             string rhs = statement.substr(pos + 2); // Skip space after '='
             cout<<"lhs := "<<lhs<<" ; rhs := "<<rhs<<"\n";
 
-            // Build AST for RHS expression
+            // Tokenize RHS expression
             vector<string> tokens_rhs = tokenize(rhs);
             cout<<"tokenized rhs : \n";
             for(auto &token : tokens_rhs){
@@ -217,7 +212,7 @@ int main() {
             }
             cout<<endl;
 
-            // Build AST for LHS expression
+            // Tokenize LHS expression
             vector<string> tokens_lhs = tokenize(lhs);
             cout<<"tokenized lhs : \n";
             for(auto &token : tokens_lhs){
@@ -225,23 +220,17 @@ int main() {
             }
             cout<<"\n";
 
+            // Convert infix to prefix for RHS
             vector<string> prefix_expression_rhs = infixToPrefix(tokens_rhs);
-            vector<string> prefix_expression_lhs = infixToPrefix(tokens_lhs);
-
             cout<<"prefix expression rhs : \n";
             for(auto &token : prefix_expression_rhs){
                 cout<<token<<";";
             }
             cout<<"\n";
 
-            cout<<"prefix expression lhs : \n";
-            for(auto &token : prefix_expression_lhs){
-                cout<<token<<";";
-            }
-            cout<<"\n";
-
-            TreeNode* root_rhs = constructAST(prefix_expression_rhs, ast);
-            TreeNode* root_lhs = constructAST(prefix_expression_lhs, ast);
+            // Build AST for RHS expression
+            TreeNode* root_rhs = constructAST(prefix_expression_rhs);
+            TreeNode* root_lhs = constructAST(tokens_lhs);
             
             // Build final AST tree
             TreeNode* root = new TreeNode("=");
@@ -252,17 +241,14 @@ int main() {
             printTree(root);
             cout << endl;
             
-            if(tokens_lhs.size()==1){
-                ast[tokens_lhs[0]] = root_rhs;
-            }
-            
-            // string fileName = "ast_" + to_string(line_num) + ".dot";
-            // generateDOT(root, fileName);
+            // Generate dot file for the tree
+            string fileName = "./io/ast_" + to_string(line_num) + ".dot";
+            generateDOT(root, fileName);
 
-            // cout << "DOT file generated: " << fileName << endl;
+            cout << "DOT file generated: " << fileName << endl;
 
             // Clean up the tree
-            // deleteTree(root);
+            deleteTree(root);
 
         }
         

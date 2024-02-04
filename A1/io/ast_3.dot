@@ -1,0 +1,11 @@
+digraph AST {
+    "0x145e05e20" [label="="];
+    "0x145e05e20" -> "0x145e05df0";
+    "0x145e05df0" [label="y"];
+    "0x145e05e20" -> "0x145e05dc0";
+    "0x145e05dc0" [label="+"];
+    "0x145e05dc0" -> "0x145e05d90";
+    "0x145e05d90" [label="z"];
+    "0x145e05dc0" -> "0x145e05fc0";
+    "0x145e05fc0" [label="x"];
+}
