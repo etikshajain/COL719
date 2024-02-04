@@ -159,7 +159,9 @@ DFGNode* constructDFG(const vector<string>& prefixExpression, unordered_map<stri
         const string& token = prefixExpression[i];
 
         DFGNode* newNode;
-
+        
+        // if the token is an operator or a constant -- always create a new node
+        // no need to add this node to the map
         if(isdigit(token[0]) || !isalpha(token[0])){
             newNode = new DFGNode(token, false, nodesList.size());
             nodesList.push_back(newNode);
@@ -172,6 +174,7 @@ DFGNode* constructDFG(const vector<string>& prefixExpression, unordered_map<stri
             else{
                 newNode = new DFGNode(token, true, nodesList.size());
                 nodesList.push_back(newNode);
+                // add the new node to the map
                 dfg_node[token] = newNode;
             }
         }
@@ -220,7 +223,7 @@ int main() {
             string rhs = statement.substr(pos + 2); // Skip space after '='
             std::cout<<"lhs := "<<lhs<<" ; rhs := "<<rhs<<"\n";
 
-            // check re-assignment
+            // check re-assignment of lhs
             if(single_assignment.find(lhs)!=single_assignment.end()){
                 string new_lhs = lhs + "1";
                 single_assignment[lhs] = new_lhs;
@@ -229,7 +232,7 @@ int main() {
                 single_assignment[lhs]=lhs;
             }
 
-            // Tokenize RHS expression
+            // Tokenize RHS expression with reassigned values
             vector<string> tokens_rhs = tokenize(rhs, single_assignment);
             std::cout<<"tokenized rhs : \n";
             for(auto &token : tokens_rhs){
@@ -237,7 +240,7 @@ int main() {
             }
             std::cout<<endl;
 
-            // Tokenize LHS expression
+            // Tokenize LHS expression with reassigned values
             vector<string> tokens_lhs = tokenize(lhs, single_assignment);
             std::cout<<"tokenized lhs : \n";
             for(auto &token : tokens_lhs){
@@ -254,11 +257,18 @@ int main() {
             std::cout<<"\n";
 
             // Build DFG
-            DFGNode*left = new DFGNode(tokens_lhs[0], true, nodes_list.size()); // lhs node is always a new node(single assignment)
+
+            // lhs node is always a new node(single assignment)
+            DFGNode*left = new DFGNode(tokens_lhs[0], true, nodes_list.size()); 
             nodes_list.push_back(left);
+
+            // add the new node to map
             dfg_node[tokens_lhs[0]] = left;
 
+            // build dfg for RHS 
             root = constructDFG(prefix_expression_rhs, dfg_node, nodes_list); // always an operator
+
+            // the left node is an output of the operator node
             root->children.push_back(left);
             root=left;
         }

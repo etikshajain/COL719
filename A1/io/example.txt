@@ -1,5 +1,5 @@
-w = a + b
-x = a - c
+w = a + b - d * e
+x = w * a + c
 y = x + d
 x = a + c
 z = y + x
