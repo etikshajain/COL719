@@ -3,6 +3,9 @@
 #include<stack>
 #include<iostream>
 #include<fstream>
+#include<vector>
+#include<unordered_map>
+#include<algorithm>
 
 using namespace std;
 
@@ -178,7 +181,6 @@ int main() {
 
     // Read each statement from the file
     string statement;
-    unordered_map<string, vector<string>> dfg; // Data Flow Graph
 
     int line_num = 0;
     while (getline(infile, statement)) {
