@@ -15,3 +15,4 @@ run: all
 
 clean:
 	rm -f ast dfg
+	rm -f ./io/*.dot ./io/*.png
