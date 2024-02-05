@@ -1,11 +1,15 @@
 digraph AST {
-    "0x1567041d0" [label="="];
-    "0x1567041d0" -> "0x1567041a0";
-    "0x1567041a0" [label="w"];
-    "0x1567041d0" -> "0x156704170";
-    "0x156704170" [label="+"];
-    "0x156704170" -> "0x156704140";
-    "0x156704140" [label="a"];
-    "0x156704170" -> "0x1567040a0";
-    "0x1567040a0" [label="b"];
+    "0x132704290" [label="=", shape=box];
+    "0x132704290" -> "0x132704260" [color="blue"];
+    "0x132704260" [label="a", shape=ellipse];
+    "0x132704290" -> "0x132704230" [color="red"];
+    "0x132704230" [label="-", shape=box];
+    "0x132704230" -> "0x132704200" [color="blue"];
+    "0x132704200" [label="-", shape=box];
+    "0x132704200" -> "0x132704100" [color="blue"];
+    "0x132704100" [label="b", shape=ellipse];
+    "0x132704200" -> "0x1327040d0" [color="red"];
+    "0x1327040d0" [label="c", shape=ellipse];
+    "0x132704230" -> "0x1327040a0" [color="red"];
+    "0x1327040a0" [label="d", shape=ellipse];
 }

@@ -1,5 +1,1 @@
-w = a + b
-w = a - c
-x = w * e
-x = 5
-w = w * x
+a = b - c - d

@@ -11,8 +11,9 @@ struct DFGNode {
     vector<DFGNode*>children;
     bool type;
     int id;
+    string dir;
 
-    DFGNode(const string& val, const bool& type, int idd) : value(val), children({}), type(type), id(idd) {}
+    DFGNode(const string& val, const bool& type, int idd) : value(val), children({}), type(type), id(idd), dir("") {}
 };
 
 vector<string> tokenize(string expression, unordered_map<string,string>&single_assignment){
@@ -43,27 +44,40 @@ vector<string> tokenize(string expression, unordered_map<string,string>&single_a
     return tokens;
 }
 
-void generateDOTHelper(DFGNode* root, ofstream& dotFile, vector<bool>&vis) {
+void generateDOTHelper(DFGNode* root, ofstream& dotFile, vector<bool>&vis, unordered_map<DFGNode*,DFGNode*>& leftparent) {
     if (root == nullptr) return;
     vis[root->id]=true;
 
-    dotFile << "    \"" << root << "\" [label=\"" << root->value << "\"];" << endl;
+    string shape = (!isdigit((root->value)[0]) && !isalpha((root->value)[0])) ? "box" : "ellipse";
+
+    dotFile << "    \"" << root << "\" [label=\"" << root->value << "\", shape=" << shape << "];" << endl;
 
     for(DFGNode*child: root->children){
-        dotFile << "    \"" << root << "\" -> \"" << child << "\";" << endl;
+        // if the child is an operator, we want the edge color to be blue if the root is the left parent.
+        if(child->type==false){
+            if(leftparent[child]==root){
+                dotFile << "    \"" << root << "\" -> \"" << child << "\" [color=\"blue\"];" << endl;
+            }
+            else{
+                dotFile << "    \"" << root << "\" -> \"" << child << "\" [color=\"red\"];" << endl;
+            }
+        }
+        else{
+            dotFile << "    \"" << root << "\" -> \"" << child << "\";" << endl;
+        }
         if(vis[child->id]==false){
-            generateDOTHelper(child, dotFile, vis);
+            generateDOTHelper(child, dotFile, vis, leftparent);
         }
     }
 }
 
-void generateDOT(vector<DFGNode*> nodes, const string& fileName) {
+void generateDOT(vector<DFGNode*> nodes, const string& fileName, unordered_map<DFGNode*,DFGNode*>& leftparent) {
     ofstream dotFile(fileName);
     dotFile << "digraph DFG {" << endl;
     vector<bool>vis(nodes.size(),false);
     for(DFGNode*node: nodes){
         if(vis[node->id]==false){
-            generateDOTHelper(node, dotFile, vis);
+            generateDOTHelper(node, dotFile, vis, leftparent);
         }
     }
     dotFile << "}" << endl;
@@ -81,7 +95,7 @@ int precedence(char op) {
         return 3;
     }
     if(op=='+'){
-        return 2;
+        return 1;
     }
     if(op=='-'){
         return 1;
@@ -114,7 +128,7 @@ vector<string> infixToPrefix(const vector<string>& tokens) {
             }
             operators.pop(); // pop '('
         } else {
-            while (!operators.empty() && precedence(operators.top()) >= precedence(token[0])) {
+            while (!operators.empty() && precedence(operators.top()) > precedence(token[0])) {
                 output.push_back(string(1, operators.top()));
                 operators.pop();
             }
@@ -132,7 +146,7 @@ vector<string> infixToPrefix(const vector<string>& tokens) {
     return output;
 }
 
-DFGNode* constructDFG(const vector<string>& prefixExpression, unordered_map<string,DFGNode*>& dfg_node, vector<DFGNode*>&nodesList) {
+DFGNode* constructDFG(const vector<string>& prefixExpression, unordered_map<string,DFGNode*>& dfg_node, vector<DFGNode*>&nodesList, unordered_map<DFGNode*,DFGNode*>& leftparent) {
     if (prefixExpression.empty()) {
         return nullptr;
     }
@@ -171,6 +185,7 @@ DFGNode* constructDFG(const vector<string>& prefixExpression, unordered_map<stri
             nodes.pop();
             opr1->children.push_back(newNode);
             opr2->children.push_back(newNode);
+            leftparent[newNode] = opr1;
             nodes.push(newNode);
         }
     }
@@ -193,6 +208,7 @@ int main() {
     unordered_map<string,string>single_assignment;
     unordered_map<string,DFGNode*> dfg_node;
     vector<DFGNode*>nodes_list;
+    unordered_map<DFGNode*,DFGNode*> leftparent;
 
     DFGNode*root = nullptr;
 
@@ -245,7 +261,7 @@ int main() {
             dfg_node[new_lhs] = left;
 
             // build dfg for RHS 
-            root = constructDFG(prefix_expression_rhs, dfg_node, nodes_list); // always an operator
+            root = constructDFG(prefix_expression_rhs, dfg_node, nodes_list, leftparent); // always an operator
 
             // the left node is an output of the operator node
             root->children.push_back(left);
@@ -256,7 +272,7 @@ int main() {
 
     // Generate dot file for the tree
     string fileName = "./io/dfg.dot";
-    generateDOT(nodes_list, fileName);
+    generateDOT(nodes_list, fileName, leftparent);
 
     // Delete DFG
     deleteDFG(nodes_list);

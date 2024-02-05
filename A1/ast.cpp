@@ -52,15 +52,17 @@ void printTree(TreeNode* root, string prefix = "", bool isLeft = true) {
 void generateDOTHelper(TreeNode* root, ofstream& dotFile) {
     if (root == nullptr) return;
 
-    dotFile << "    \"" << root << "\" [label=\"" << root->value << "\"];" << endl;
+    string shape = (!isdigit((root->value)[0]) && !isalpha((root->value)[0])) ? "box" : "ellipse";
+
+    dotFile << "    \"" << root << "\" [label=\"" << root->value << "\", shape=" << shape << "];" << endl;
 
     if (root->left != nullptr) {
-        dotFile << "    \"" << root << "\" -> \"" << root->left << "\";" << endl;
+        dotFile << "    \"" << root << "\" -> \"" << root->left << "\" [color=\"blue\"];" << endl;
         generateDOTHelper(root->left, dotFile);
     }
 
     if (root->right != nullptr) {
-        dotFile << "    \"" << root << "\" -> \"" << root->right << "\";" << endl;
+        dotFile << "    \"" << root << "\" -> \"" << root->right << "\" [color=\"red\"];" << endl;
         generateDOTHelper(root->right, dotFile);
     }
 }
@@ -73,22 +75,6 @@ void generateDOT(TreeNode* root, const string& fileName) {
     }
     dotFile << "}" << endl;
     dotFile.close();
-}
-
-void generateDOT(TreeNode* root, ofstream& dotFile) {
-    if (root == nullptr) return;
-
-    dotFile << "    \"" << root << "\" [label=\"" << root->value << "\"];" << endl;
-
-    if (root->left != nullptr) {
-        dotFile << "    \"" << root << "\" -> \"" << root->left << "\" [label=\"\"];" << endl;
-        generateDOT(root->left, dotFile);
-    }
-
-    if (root->right != nullptr) {
-        dotFile << "    \"" << root << "\" -> \"" << root->right << "\" [label=\"\"];" << endl;
-        generateDOT(root->right, dotFile);
-    }
 }
 
 void deleteTree(TreeNode* root) {
@@ -104,7 +90,7 @@ int precedence(char op) {
         return 3;
     }
     if(op=='+'){
-        return 2;
+        return 1;
     }
     if(op=='-'){
         return 1;
@@ -137,7 +123,7 @@ vector<string> infixToPrefix(const vector<string>& tokens) {
             }
             operators.pop(); // pop '('
         } else {
-            while (!operators.empty() && precedence(operators.top()) >= precedence(token[0])) {
+            while (!operators.empty() && precedence(operators.top()) > precedence(token[0])) {
                 output.push_back(string(1, operators.top()));
                 operators.pop();
             }
