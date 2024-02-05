@@ -3,6 +3,9 @@
 #include<stack>
 #include<iostream>
 #include<fstream>
+#include<vector>
+#include<unordered_map>
+#include<algorithm>
 
 using namespace std;
 
