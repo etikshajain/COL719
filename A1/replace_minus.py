@@ -1,5 +1,5 @@
 def main() :
-    file_name = 'example.txt'
+    file_name = './io/example.txt'
     with open(file_name, 'r',encoding='utf-8') as file:
         text = file.read()
 
